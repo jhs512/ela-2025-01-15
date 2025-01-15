@@ -3,17 +3,27 @@ package com.ll.domain.post.postDoc.service;
 import com.github.f4b6a3.tsid.TsidCreator;
 import com.ll.domain.post.postDoc.document.PostDoc;
 import com.ll.domain.post.postDoc.repository.PostDocRepository;
+import com.ll.global.app.AppConfig;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @RequiredArgsConstructor
 public class PostDocService {
     private final PostDocRepository postDocRepository;
+    private AtomicInteger atomicInteger = new AtomicInteger(0);
+
+    public String genNextId() {
+        return AppConfig.isNotProd() ? atomicInteger.incrementAndGet() + "" : TsidCreator.getTsid().toString();
+    }
 
     public PostDoc write(String title, String content) {
         PostDoc postDoc = PostDoc.builder()
-                .id(TsidCreator.getTsid().toString())
+                .id(genNextId())
                 .title(title)
                 .content(content)
                 .build();
@@ -23,5 +33,24 @@ public class PostDocService {
 
     public void truncate() {
         postDocRepository.deleteAll();
+    }
+
+    public void delete(PostDoc postDoc) {
+        postDocRepository.delete(postDoc);
+    }
+
+    public Optional<PostDoc> findById(String id) {
+        return postDocRepository.findById(id);
+    }
+
+    public void modify(PostDoc postDoc, String title, String content) {
+        postDoc.setTitle(title);
+        postDoc.setContent(content);
+
+        postDocRepository.save(postDoc);
+    }
+
+    public List<PostDoc> findAll() {
+        return (List<PostDoc>) postDocRepository.findAll();
     }
 }
