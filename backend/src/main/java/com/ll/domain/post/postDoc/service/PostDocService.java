@@ -4,10 +4,12 @@ import com.github.f4b6a3.tsid.TsidCreator;
 import com.ll.domain.post.postDoc.document.PostDoc;
 import com.ll.domain.post.postDoc.repository.PostDocRepository;
 import com.ll.global.app.AppConfig;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -50,7 +52,7 @@ public class PostDocService {
         postDocRepository.save(postDoc);
     }
 
-    public List<PostDoc> findAll() {
-        return (List<PostDoc>) postDocRepository.findAll();
+    public Page<PostDoc> search(@NotBlank String kw, Pageable pageable) {
+        return postDocRepository.findByTitleContaining(kw, pageable);
     }
 }

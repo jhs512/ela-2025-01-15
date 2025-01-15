@@ -2,13 +2,18 @@ package com.ll.domain.post.postDoc.controller;
 
 import com.ll.domain.post.postDoc.document.PostDoc;
 import com.ll.domain.post.postDoc.service.PostDocService;
+import com.ll.global.app.AppConfig;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/postDocs")
@@ -24,6 +29,17 @@ public class ApiV1PostDocController {
         PostDoc postDoc = postDocService.findById(id).get();
 
         return postDoc;
+    }
+
+    @GetMapping
+    public Page<PostDoc> search(
+            @RequestParam(defaultValue = "1") int page,
+            @NotBlank String kw
+    ) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("id.keyword"));
+        Pageable pageable = PageRequest.of(page - 1, AppConfig.getBasePageSize(), Sort.by(sorts));
+        return postDocService.search(kw, pageable);
     }
 
     @GetMapping("/{id}/delete")
