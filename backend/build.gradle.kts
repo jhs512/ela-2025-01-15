@@ -33,6 +33,8 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    implementation("com.github.f4b6a3:tsid-creator:5.2.6")
 }
 
 tasks.withType<Test> {
